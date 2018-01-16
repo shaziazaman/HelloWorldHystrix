@@ -1,0 +1,11 @@
+hystrix:
+  command:
+    AnnotationGroup:
+      execution.isolation.thread.timeoutInMilliseconds: 30000
+  threadpool:
+    AnnotationGroup:
+      coreSize: 3
+      maximumSize: 5
+      maxQueueSize: 1000
+      queueSizeRejectionThreshold: 1000
+      metrics.rollingStats.timeInMilliseconds: 180000

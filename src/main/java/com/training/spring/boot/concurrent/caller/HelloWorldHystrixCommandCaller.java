@@ -6,12 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-/**
- * Created by shazia on 1/12/2018.
- */
 
 @Named
 public class HelloWorldHystrixCommandCaller {
@@ -28,11 +26,17 @@ public class HelloWorldHystrixCommandCaller {
 
     public void callHystrixCommand(){
         logger.info(greeting);
-        HelloWordHystrixCommand hystrixCommand = new HelloWordHystrixCommand(command_greeting, timeout);
-        Future<String> future = hystrixCommand.queue();
+        List<Future<String>> futuers = new ArrayList<>();
+        for(int counter = 1; counter < 15; counter++) {
+            HelloWordHystrixCommand hystrixCommand = new HelloWordHystrixCommand(command_greeting, timeout, counter);
+            Future<String> future = hystrixCommand.queue();
+            futuers.add(future);
+        }
         try {
-            String response = future.get();
-            logger.info("got response from command execution: " + response);
+            for(Future<String> future: futuers) {
+                String response = future.get();
+                logger.info("got response from command execution: " + response);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -40,18 +44,4 @@ public class HelloWorldHystrixCommandCaller {
         }
 
     }
-
-
-
-//    public HelloWorldHystrixCommandCaller(String name) {
-//        super(HystrixCommandGroupKey.Factory.asKey("TrainingGroup"));
-//        this.name = name;
-//    }
-
-//    @Override
-//    protected String run() throws Exception {
-//        logger.info(greeting);
-//        requestProcessor.processRequest(name);
-//        return name + " | " + greeting;
-//    }
 }

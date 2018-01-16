@@ -1,9 +1,7 @@
 package com.training.spring.boot.concurrent.command;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.netflix.hystrix.contrib.javanica.command.AsyncResult;
-import com.sun.tracing.dtrace.NameAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,9 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import javax.inject.Named;
 import java.util.concurrent.Future;
 
-/**
- * Created by shazia on 1/15/2018.
- */
 @Named
 public class HelloWorldHystrixCommandWithAnnotation {
 
@@ -22,31 +17,27 @@ public class HelloWorldHystrixCommandWithAnnotation {
     @Value("${command.greeting}")
     private String greeting;
 
-    @Value("${execution.timeout:3000}")
-    private String timeout;
+    private int counter;
 
     @HystrixCommand(groupKey = "AnnotationGroup"
-            , commandKey = "getGreeting"
+            , commandKey = "AnnotationGroup"
             , fallbackMethod = "getError"
-            , commandProperties = {
-                @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "1000")
-            }
-            , threadPoolProperties = {
-                @HystrixProperty(name="coreSize", value = "1")
-                , @HystrixProperty(name="maxQueueSize",value="5")
-            }
+            , threadPoolKey = "AnnotationGroup"
     )
-    public Future<String> callWithAnnotation() {
-        logger.info(greeting);
+    public Future<String> callWithAnnotation(int counter) {
         return new AsyncResult<String>() {
             @Override
             public String invoke() {
+                utilityProcess(counter);
                 return greeting;
             }
         };
     }
 
-    public String getError() {
-        return null;
+    private void utilityProcess(int counter) {
+        logger.info("Utility process being called | " + counter);
+    }
+    public String getError(int counter) {
+        return greeting + " | error |" + counter;
     }
 }

@@ -1,35 +1,28 @@
 package com.training.spring.boot.concurrent.command;
 
 import com.netflix.hystrix.*;
-import com.sun.tracing.dtrace.NameAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.inject.Named;
-
-/**
- * Created by shazia on 1/14/2018.
- */
 
 public class HelloWordHystrixCommand extends HystrixCommand<String> {
     Logger logger = LoggerFactory.getLogger(HelloWordHystrixCommand.class);
 
     private String greeting;
+    int counter;
 
-    public HelloWordHystrixCommand(String greeting, int timeout) {
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("GroupName"))
+    public HelloWordHystrixCommand(String greeting, int timeout, int counter) {
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("CommandGroup"))
                 .andCommandKey(HystrixCommandKey.Factory.asKey("CommandKey"))
-                .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("ThreadPoolKey"))
+                .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("CommandGroup"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionTimeoutInMilliseconds(timeout)));
         this.greeting = greeting;
+        this.counter = counter;
     }
 
     @Override
     protected String run() throws Exception {
-        logger.info(greeting);
+        logger.info(greeting  + " | " + counter);
         return greeting;
     }
 

@@ -12,10 +12,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.inject.Inject;
 
-/**
- * Created by shazia on 1/12/2018.
- */
-
 @SpringBootApplication
 public class HelloWorldHystrixStandAloneApplication implements CommandLineRunner {
 
